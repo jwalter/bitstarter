@@ -49,26 +49,26 @@ var checkHtmlFile = function(htmlfile, checksfile, url) {
     if (url) {
       rest.get(url).on('complete', function(result, response) {
         $ = cheerio.load(result);
-        var checks = loadChecks(checksfile).sort();
-        var out = {};
-        for(var ii in checks) {
-            var present = $(checks[ii]).length > 0;
-            out[checks[ii]] = present;
-        }
+        var out = checkDOM($, checksfile);
         console.log(JSON.stringify(out, null, 4));
         return out;
       });
     } else {
       $ = cheerioHtmlFile(htmlfile);
-      var checks = loadChecks(checksfile).sort();
-      var out = {};
-      for(var ii in checks) {
-          var present = $(checks[ii]).length > 0;
-          out[checks[ii]] = present;
-      }
-      return out;
+      return checkDOM($, checksfile);
     }
 };
+
+var checkDOM = function(dom, checksfile) {
+    var checks = loadChecks(checksfile).sort();
+    var out = {};
+    for(var ii in checks) {
+        var present = dom(checks[ii]).length > 0;
+        out[checks[ii]] = present;
+    }
+    return out;
+
+}
 
 var clone = function(fn) {
     // Workaround for commander.js issue.
